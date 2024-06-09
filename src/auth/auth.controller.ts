@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDTO } from 'src/dto/password/sign-in.dto';
+import { SignInDTO } from 'src/dto/auth/sign-in.dto';
 
 @Controller('auth')
 export class AuthController {

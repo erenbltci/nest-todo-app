@@ -7,19 +7,25 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateTodoDto } from 'src/dto/todo/createTodo.dto';
 import { TodoService } from './todo.service';
-import { Todo, TodoStatusEnum } from '@prisma/client';
+import { Todo, TodoStatusEnum, UserRolesEnum } from '@prisma/client';
 import { deleteTodoDTO } from 'src/dto/todo/deleteTodo.dto';
 import { findTodoByIdDTO } from 'src/dto/todo/findById.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles/role.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
 
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @Post()
-  async createUser(@Body() createTodo: CreateTodoDto): Promise<string> {
+  @Roles(UserRolesEnum.USER, UserRolesEnum.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  async createTodo(@Body() createTodo: CreateTodoDto): Promise<string> {
     try {
       const createdTodo = await this.todoService.createTodo(createTodo);
 
@@ -30,6 +36,8 @@ export class TodoController {
   }
 
   @Delete()
+  @Roles(UserRolesEnum.USER, UserRolesEnum.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   async deleteTodo(@Body() deleteTodo: deleteTodoDTO): Promise<string> {
     try {
       const deletedTodo = await this.todoService.deleteTodo(deleteTodo);
@@ -41,6 +49,8 @@ export class TodoController {
   }
 
   @Get()
+  @Roles(UserRolesEnum.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   async listAllTodo(@Body() status: TodoStatusEnum | null): Promise<Todo[]> {
     try {
       const listTodos = await this.todoService.getTodoList(status);
@@ -52,6 +62,8 @@ export class TodoController {
   }
 
   @Get(':id')
+  @Roles(UserRolesEnum.USER, UserRolesEnum.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   async findTodoById(@Param() id: findTodoByIdDTO): Promise<Todo> {
     try {
       const getTodo = await this.todoService.findTodoById(id);
