@@ -32,7 +32,7 @@ export class UserController {
   @Get()
   async getUsers() {
     try {
-      const users = await this.userService.getUser();
+      const users = await this.userService.getUsers();
 
       return users;
     } catch (error) {
